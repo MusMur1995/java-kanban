@@ -1,9 +1,13 @@
+package models;
+
+import enums.TaskStatus;
+
 import java.util.Objects;
 
 public class Task {
     private String name;
     private String description;
-    private int id;
+    private Integer id;
     private TaskStatus status;
 
     public Task(String name, String description) {
@@ -46,7 +50,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "models.Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -59,7 +63,7 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id;
+        return Objects.equals(id, task.id);
     }
 
     @Override
