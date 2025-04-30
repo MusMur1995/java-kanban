@@ -1,4 +1,4 @@
-package models;
+package javakanban.models;
 
 public class Subtask extends Task {
 
@@ -15,7 +15,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "models.Subtask{" +
+        return "javakanban.models.Subtask{" +
                 "id=" + getId() +
                 ", name='" + getName() + '\'' +
                 ", status=" + getStatus() +

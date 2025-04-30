@@ -1,9 +1,9 @@
-package service;
+package javakanban.service;
 
-import enums.TaskStatus;
-import models.Epic;
-import models.Subtask;
-import models.Task;
+import javakanban.models.TaskStatus;
+import javakanban.models.Epic;
+import javakanban.models.Subtask;
+import javakanban.models.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public class TaskManager {
 
     private int idCounter = 0;
 
-    //методы для models.Task
+    //методы для javakanban.models.Task
     public List<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
     }
@@ -49,19 +49,13 @@ public class TaskManager {
         tasks.remove(id);
     }
 
-    //методы для models.Epic
+    //методы для javakanban.models.Epic
     public List<Epic> getAllEpics() {
         return new ArrayList<>(epics.values());
     }
 
     public void deleteAllEpics() {
-        List<Integer> allSubtaskIds = new ArrayList<>();
-        for (Epic epic : epics.values()) {
-            allSubtaskIds.addAll(epic.getSubtaskIds());
-        }
-        for (Integer subtaskId : allSubtaskIds) {
-            subtasks.remove(subtaskId);
-        }
+        subtasks.clear();
         epics.clear();
     }
 
@@ -76,13 +70,15 @@ public class TaskManager {
     }
 
     public void updateEpic(Epic epic) {
-        if (epics.containsKey(epic.getId())) {
-            Epic existingEpic = epics.get(epic.getId());
-            existingEpic.setName(epic.getName());
-            existingEpic.setDescription(epic.getDescription());
-            updateEpicStatus(existingEpic.getId());
+        if (!epics.containsKey(epic.getId())) {
+            return;
         }
+        Epic existingEpic = epics.get(epic.getId());
+        existingEpic.setName(epic.getName());
+        existingEpic.setDescription(epic.getDescription());
+        updateEpicStatus(existingEpic.getId());
     }
+
 
     public void deleteEpicById(int id) {
         if (!epics.containsKey(id)) {

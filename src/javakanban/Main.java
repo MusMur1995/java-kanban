@@ -1,8 +1,10 @@
-import enums.TaskStatus;
-import models.Epic;
-import models.Subtask;
-import models.Task;
-import service.TaskManager;
+package javakanban;
+
+import javakanban.models.TaskStatus;
+import javakanban.models.Epic;
+import javakanban.models.Subtask;
+import javakanban.models.Task;
+import javakanban.service.TaskManager;
 
 public class Main {
 

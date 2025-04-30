@@ -1,6 +1,4 @@
-package models;
-
-import enums.TaskStatus;
+package javakanban.models;
 
 import java.util.Objects;
 
@@ -50,7 +48,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "models.Task{" +
+        return "javakanban.models.Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

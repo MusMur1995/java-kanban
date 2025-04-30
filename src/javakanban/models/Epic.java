@@ -1,4 +1,4 @@
-package models;
+package javakanban.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "models.Epic{" +
+        return "javakanban.models.Epic{" +
                 "id=" + getId() +
                 ", name='" + getName() + '\'' +
                 ", status=" + getStatus() +
