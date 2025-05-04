@@ -12,6 +12,9 @@ public class Epic extends Task {
     }
 
     public void addSubtaskId(int subtaskId) {
+        if (this.getId() == subtaskId) {
+            return;
+        }
         subtaskIds.add(subtaskId);
     }
 
@@ -25,7 +28,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "javakanban.models.Epic{" +
+        return "Epic{" +
                 "id=" + getId() +
                 ", name='" + getName() + '\'' +
                 ", status=" + getStatus() +
