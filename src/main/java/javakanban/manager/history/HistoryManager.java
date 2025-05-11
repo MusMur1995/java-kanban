@@ -1,4 +1,4 @@
-package javakanban.service;
+package javakanban.manager.history;
 
 import javakanban.models.Task;
 

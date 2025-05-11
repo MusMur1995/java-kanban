@@ -1,6 +1,7 @@
-import javakanban.service.HistoryManager;
-import javakanban.service.Managers;
-import javakanban.service.TaskManager;
+package javakanban.manager;
+
+import javakanban.manager.history.HistoryManager;
+import javakanban.manager.task.TaskManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,12 +10,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ManagersTest {
     //убедитесь, что утилитарный класс всегда возвращает проинициализированные и готовые к работе экземпляры менеджеров;
     @Test
-    @DisplayName("Утилитарный класс должен возвращать проинициализированные экземпляры менеджеров")
-    void utilityClassShouldReturnInitializedManagers() {
+    @DisplayName("getDefault() возвращает проинициализированный TaskManager")
+    void getDefault_returnsInitializedTaskManager() {
         TaskManager taskManager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
 
         assertNotNull(taskManager, "TaskManager должен быть проинициализирован");
+    }
+
+    @Test
+    @DisplayName("getDefaultHistory() возвращает проинициализированный HistoryManager")
+    void getDefaultHistory_returnsInitializedHistoryManager() {
+        HistoryManager historyManager = Managers.getDefaultHistory();
+
         assertNotNull(historyManager, "HistoryManager должен быть проинициализирован");
     }
 }

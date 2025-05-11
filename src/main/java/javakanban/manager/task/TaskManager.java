@@ -1,4 +1,4 @@
-package javakanban.service;
+package javakanban.manager.task;
 
 import javakanban.models.Epic;
 import javakanban.models.Subtask;

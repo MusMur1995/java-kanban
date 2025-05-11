@@ -1,6 +1,6 @@
+package javakanban.manager.history;
+
 import javakanban.models.Task;
-import javakanban.service.HistoryManager;
-import javakanban.service.InMemoryHistoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,17 +29,19 @@ public class InMemoryHistoryManagerTest {
         assertEquals(task, history.get(0));
     }
 
+    //убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных.
     @Test
-    @DisplayName("getHistory должен возвращать копию списка")
-    void getHistoryShouldReturnCopy() {
+    @DisplayName("История хранит неизменённую задачу после изменения оригинала")
+    void historyShouldStoreUnchangedTaskAfterModification() {
         Task task = new Task("Task", "Description");
+
         historyManager.add(task);
 
-        List<Task> originalHistory = historyManager.getHistory();
-        originalHistory.clear();
+        task.setName("Modified Task");
 
-        List<Task> actualHistory = historyManager.getHistory();
-        assertEquals(1, actualHistory.size());
+        List<Task> history = historyManager.getHistory();
+        assertEquals("Task", history.get(0).getName(),
+                "В истории должна сохраняться неизменная копия задачи");
     }
 
     @Test

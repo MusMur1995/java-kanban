@@ -1,4 +1,4 @@
-package javakanban.service;
+package javakanban.manager.history;
 
 import javakanban.models.Task;
 
@@ -15,16 +15,18 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
-
         if (history.size() >= MAX_HISTORY_SIZE) {
             history.remove(0);
         }
-
-        history.add(task);
+        history.add(task.copy());
     }
 
     @Override
     public List<Task> getHistory() {
-        return new ArrayList<>(history);
+        List<Task> copiedHistory = new ArrayList<>();
+        for (Task task : history) {
+            copiedHistory.add(task.copy());
+        }
+        return copiedHistory;
     }
 }

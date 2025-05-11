@@ -1,5 +1,6 @@
-package javakanban.service;
+package javakanban.manager.task;
 
+import javakanban.manager.history.HistoryManager;
 import javakanban.models.Epic;
 import javakanban.models.Subtask;
 import javakanban.models.Task;

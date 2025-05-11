@@ -1,27 +1,34 @@
-import javakanban.models.Subtask;
-import javakanban.models.Task;
+package javakanban.models;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SubtaskTest {
 
     //проверьте, что наследники класса Task (Subtask) равны друг другу, если равен их id;
     @Test
-    @DisplayName("Подзадачи с одинаковым ID должны быть равны")
-    void subtasksWithSameIdShouldBeEqual() {
+    @DisplayName("equals() должен вернуть true, если ID подзадач одинаковы")
+    void equals_returnTrue_idsSame() {
         Task subtask1 = new Subtask("Subtask 1", "Description 1", 1);
         subtask1.setId(100);
 
         Task subtask2 = new Subtask("Subtask 2", "Description 2", 1);
         subtask2.setId(100);
 
-        System.out.println("Subtask 1: ID=" + subtask1.getId() + ", hash=" + subtask1.hashCode());
-        System.out.println("Subtask 2: ID=" + subtask2.getId() + ", hash=" + subtask2.hashCode());
+        assertTrue(subtask1.equals(subtask2), "Подзадачи с одинаковыми id должны быть равны");
+    }
 
-        assertEquals(subtask1, subtask2, "Подзадачи с одинаковыми id должны быть равны");
+    @Test
+    @DisplayName("hashCode() должен быть одинаковым, если ID подзадач одинаковы")
+    void hashCode_returnTrue_idsSame() {
+        Task subtask1 = new Subtask("Subtask 1", "Description 1", 1);
+        subtask1.setId(100);
+
+        Task subtask2 = new Subtask("Subtask 2", "Description 2", 1);
+        subtask2.setId(100);
+
         assertEquals(subtask1.hashCode(), subtask2.hashCode(),
                 "Хэш-коды подзадач с одинаковыми id должны совпадать");
     }

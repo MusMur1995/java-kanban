@@ -30,6 +30,15 @@ public class Task {
         this.id = id;
     }
 
+    public Task copy() {
+        Task copy = new Task(this.name, this.description);
+        if (this.id != null) {
+            copy.setId(this.id);
+        }
+        copy.setStatus(this.status);
+        return copy;
+    }
+
     public TaskStatus getStatus() {
         return status;
     }

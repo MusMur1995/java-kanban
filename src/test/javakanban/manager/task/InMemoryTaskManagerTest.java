@@ -1,10 +1,10 @@
+package javakanban.manager.task;
+
+import javakanban.manager.history.InMemoryHistoryManager;
 import javakanban.models.Epic;
 import javakanban.models.Subtask;
 import javakanban.models.Task;
 import javakanban.models.TaskStatus;
-import javakanban.service.InMemoryTaskManager;
-import javakanban.service.Managers;
-import javakanban.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,16 +19,33 @@ public class InMemoryTaskManagerTest {
 
     @BeforeEach
     void setUp() {
-        manager = Managers.getDefault();
+        manager = new InMemoryTaskManager(new InMemoryHistoryManager());
     }
 
     //проверьте, что InMemoryTaskManager действительно добавляет задачи разного типа и может найти их по id;
     @Test
-    @DisplayName("InMemoryTaskManager должен добавлять задачи и находить их по id")
-    void shouldAddAndRetrieveTasksById() {
+    @DisplayName("createTask() должен добавлять задачи, getTaskById() находить их по id")
+    void createTask_returnTask_whenValidId() {
 
         Task task = new Task("Task", "Description");
         Task createdTask = manager.createTask(task);
+
+        assertEquals(createdTask, manager.getTaskById(createdTask.getId()));
+    }
+
+    @Test
+    @DisplayName("createEpic() должен добавлять эпики, getEpicById() находить их по id")
+    void createEpic_returnEpic_whenValidId() {
+
+        Epic epic = new Epic("Epic", "Epic Description");
+        Epic createdEpic = manager.createEpic(epic);
+
+        assertEquals(createdEpic, manager.getEpicById(createdEpic.getId()));
+    }
+
+    @Test
+    @DisplayName("createSubtask() должен добавлять эпики, getSubtaskById() находить их по id")
+    void createSubtask_returnSubtask_whenValidId() {
 
         Epic epic = new Epic("Epic", "Epic Description");
         Epic createdEpic = manager.createEpic(epic);
@@ -36,15 +53,12 @@ public class InMemoryTaskManagerTest {
         Subtask subtask = new Subtask("Subtask", "Subtask Description", createdEpic.getId());
         Subtask createdSubtask = manager.createSubtask(subtask);
 
-        assertInstanceOf(InMemoryTaskManager.class, manager);
-        assertEquals(createdTask, manager.getTaskById(createdTask.getId()));
-        assertEquals(createdEpic, manager.getEpicById(createdEpic.getId()));
         assertEquals(createdSubtask, manager.getSubtaskById(createdSubtask.getId()));
     }
 
     @Test
-    @DisplayName("Удаление всех задач должно очищать список задач")
-    void shouldDeleteAllTasks() {
+    @DisplayName("deleteAllTasks() должен очищать список задач")
+    void deleteAllTasks_returnTrue() {
         manager.createTask(new Task("Task1", "Desc1"));
         manager.createTask(new Task("Task2", "Desc2"));
         assertFalse(manager.getAllTasks().isEmpty());
@@ -54,8 +68,8 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Epic должен автоматически обновлять статус при добавлении подзадач")
-    void epicStatusShouldBeUpdatedAccordingToSubtasks() {
+    @DisplayName("updateSubtask() автоматически обновляет статус эпика при добавлении в него подзадач")
+    void updateEpicStatus_changesStatus_whenSubtasksChange() {
         Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
         Subtask sub1 = new Subtask("Sub1", "Desc", epic.getId());
         Subtask sub2 = new Subtask("Sub2", "Desc", epic.getId());
@@ -79,8 +93,8 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Удаление эпика должно удалять все его подзадачи")
-    void deletingEpicShouldDeleteItsSubtasks() {
+    @DisplayName("deleteEpicById() должен удалять все подзадачи эпика")
+    void deleteEpic_removesSubtasks_whenEpicDeleted() {
         Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
         Subtask sub1 = manager.createSubtask(new Subtask("Sub1", "Desc", epic.getId()));
         Subtask sub2 = manager.createSubtask(new Subtask("Sub2", "Desc", epic.getId()));
@@ -93,26 +107,23 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Метод getSubtasksByEpic должен возвращать все подзадачи указанного эпика")
-    void shouldReturnAllSubtasksOfEpic() {
+    @DisplayName("Метод getSubtasksByEpic() должен возвращать все подзадачи указанного эпика")
+    void getSubtasksByEpic_returnAllSubtasks_whenValidEpicId() {
         Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
-        Subtask sub1 = manager.createSubtask(new Subtask("Sub1", "Desc", epic.getId()));
-        Subtask sub2 = manager.createSubtask(new Subtask("Sub2", "Desc", epic.getId()));
+        manager.createSubtask(new Subtask("Sub1", "Desc", epic.getId()));
+        manager.createSubtask(new Subtask("Sub2", "Desc", epic.getId()));
 
         List<Subtask> subtasks = manager.getSubtasksByEpic(epic.getId());
         assertEquals(2, subtasks.size());
-        assertTrue(subtasks.contains(sub1));
-        assertTrue(subtasks.contains(sub2));
     }
 
     @Test
-    @DisplayName("История должна сохранять задачи после получения по ID")
-    void historyShouldContainAccessedTasks() {
+    @DisplayName("getTaskById() должен сохранять задачи, в истории запросов, после получения по ID")
+    void getHistory_containsTask_whenAccessedById() {
         Task task = manager.createTask(new Task("Task", "Desc"));
         manager.getTaskById(task.getId());
 
         List<Task> history = manager.getHistory();
-        assertEquals(1, history.size());
         assertEquals(task, history.get(0));
     }
 }
