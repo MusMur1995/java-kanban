@@ -1,5 +1,7 @@
 package javakanban.manager.history;
 
+import javakanban.models.Epic;
+import javakanban.models.Subtask;
 import javakanban.models.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +22,7 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     @DisplayName("add должен добавлять задачи в историю")
-    void shouldAddTasksToHistory() {
+    void add_task_taskAddedToHistory() {
         Task task = new Task("Task", "Description");
         historyManager.add(task);
 
@@ -32,7 +34,7 @@ public class InMemoryHistoryManagerTest {
     //убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных.
     @Test
     @DisplayName("История хранит неизменённую задачу после изменения оригинала")
-    void historyShouldStoreUnchangedTaskAfterModification() {
+    void add_modifyOriginal_copyInHistoryUnchanged() {
         Task task = new Task("Task", "Description");
 
         historyManager.add(task);
@@ -46,14 +48,14 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     @DisplayName("null не должен добавляться в историю")
-    void shouldNotAddNullTask() {
+    void add_null_notAddedToHistory() {
         historyManager.add(null);
         assertTrue(historyManager.getHistory().isEmpty());
     }
 
     @Test
     @DisplayName("история должна хранить не более 10 последних задач")
-    void historyShouldContainOnlyLast10Tasks() {
+    void add_moreThanTen_keepLastTen() {
         for (int i = 1; i <= 15; i++) {
             historyManager.add(new Task("Task" + i, "Desc" + i));
         }
@@ -62,5 +64,37 @@ public class InMemoryHistoryManagerTest {
         assertEquals(10, history.size());
         assertEquals("Task6", history.get(0).getName());
         assertEquals("Task15", history.get(9).getName());
+    }
+
+    @Test
+    @DisplayName("Добавление Epic с полями")
+    void add_epicWithFields_epicAdded() {
+        Epic epic = new Epic("EpicTask", "EpicDescription");
+        epic.addSubtaskId(101);
+        historyManager.add(epic);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size(), "История должна содержать одну задачу");
+
+        Epic epicFromHistory = (Epic) history.get(0);
+        assertEquals("EpicTask", epicFromHistory.getName(), "Имя Epic должно совпадать");
+        assertEquals("EpicDescription", epicFromHistory.getDescription(), "Описание Epic должно совпадать");
+        assertEquals(1, epicFromHistory.getSubtaskIds().size(), "Epic должен содержать один подзадачный ID");
+        assertEquals(101, epicFromHistory.getSubtaskIds().get(0), "ID подзадачи должен совпадать");
+    }
+
+    @Test
+    @DisplayName("Добавление Subtask с полями")
+    void add_subtaskWithFields_subtaskAdded() {
+        Subtask subtask = new Subtask("Subtask", "SubDescription", 42);
+        historyManager.add(subtask);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size(), "История должна содержать одну задачу");
+
+        Subtask subtaskFromHistory = (Subtask) history.get(0);
+        assertEquals("Subtask", subtaskFromHistory.getName(), "Имя Subtask должно совпадать");
+        assertEquals("SubDescription", subtaskFromHistory.getDescription(), "Описание Subtask должно совпадать");
+        assertEquals(42, subtaskFromHistory.getEpicId(), "ID Epic для Subtask должен совпадать");
     }
 }

@@ -36,7 +36,7 @@ public class SubtaskTest {
     //проверьте, что объект Subtask нельзя сделать своим же эпиком;
     @Test
     @DisplayName("Подзадача не может ссылаться на саму себя как на эпик")
-    void subtaskCannotReferenceItselfAsEpic() {
+    void subtask_cannotReferenceItselfAsEpic() {
         Subtask subtask = new Subtask("Subtask", "Description", 1);
         subtask.setId(1);
         boolean referencesItself = subtask.getId() == subtask.getEpicId();
@@ -45,7 +45,7 @@ public class SubtaskTest {
 
     @Test
     @DisplayName("Subtask должна корректно хранить epicId, если он не совпадает с её id")
-    void subtaskShouldStoreEpicIdCorrectly() {
+    void subtask_storeEpicId_notEqualsId() {
         Subtask subtask = new Subtask("Subtask", "Description", 42);
         subtask.setId(10); // epicId ≠ id
 
@@ -55,7 +55,7 @@ public class SubtaskTest {
 
     @Test
     @DisplayName("Subtask должна сбрасывать epicId при совпадении с собственным id")
-    void subtaskShouldResetEpicIdIfEqualsId() {
+    void subtask_resetEpicId_ifEqualsId() {
         Subtask subtask = new Subtask("Subtask", "Description", 5);
         subtask.setId(5); // совпадает с epicId → должен сброситься
 

@@ -12,6 +12,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = TaskStatus.NEW;
+        this.id = -1;
     }
 
     public String getName() {
@@ -23,7 +24,7 @@ public class Task {
     }
 
     public int getId() {
-        return id;
+        return id != null ? id : -1;
     }
 
     public void setId(int id) {

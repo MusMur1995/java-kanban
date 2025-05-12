@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class TaskTest {
 
-    //проверьте, что экземпляры класса Task равны друг другу, если равен их id;
+    // Проверьте, что экземпляры класса Task равны друг другу, если равен их id
     @Test
     @DisplayName("Проверка равенства задач")
-    void tasksWithSameIdShouldBeEqual() {
+    void tasks_equal_sameId() {
         Task task1 = new Task("Task 1", "Description");
         Task task2 = new Task("Task 2", "Different description");
 
@@ -27,9 +27,10 @@ public class TaskTest {
         assertEquals(task1.hashCode(), task2.hashCode(), "Хеш-коды должны совпадать");
     }
 
+    // Проверьте, что эпик и подзадача с одинаковым id не равны
     @Test
     @DisplayName("Проверка неравенства эпика и подзадачи с одинаковым ID")
-    void epicAndSubtaskWithSameIdShouldNotBeEqual() {
+    void epicAndSubtask_notEqual_sameId() {
         Task epic = new Epic("Epic", "Description");
         epic.setId(200);
 
@@ -40,10 +41,10 @@ public class TaskTest {
                 "Эпик и подзадача не должны быть равны, даже с одинаковыми id");
     }
 
-    //проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера;
+    // Проверьте, что задачи с заданным id и сгенерированным id не конфликтуют внутри менеджера
     @Test
     @DisplayName("Задачи с заданным и сгенерированным id не должны конфликтовать")
-    void tasksWithManualAndGeneratedIdsShouldNotConflict() {
+    void tasks_noConflict_manualGeneratedId() {
         TaskManager manager = Managers.getDefault();
 
         Task manualTask = new Task("Manual", "Set ID");
@@ -59,10 +60,10 @@ public class TaskTest {
         assertNotEquals(manualTask.getId(), generatedTask.getId());
     }
 
-    //создайте тест, в котором проверяется неизменность задачи (по всем полям) при добавлении задачи в менеджер
+    // Проверьте неизменность задачи (по всем полям) при добавлении задачи в менеджер
     @Test
     @DisplayName("Задача должна сохранять все поля при добавлении в менеджер")
-    void taskShouldRemainUnchangedAfterAddition() {
+    void task_remainUnchanged_afterAddition() {
         TaskManager manager = Managers.getDefault();
 
         Task task = new Task("Immutable", "Do not mutate");
@@ -78,9 +79,10 @@ public class TaskTest {
         assertEquals(createdTask.getId(), retrieved.getId(), "ID должен совпадать");
     }
 
+    // Проверьте, что Task корректно сохраняет имя, описание и статус по умолчанию
     @Test
     @DisplayName("Task должен корректно сохранять name, description и статус по умолчанию")
-    void constructorShouldInitializeFieldsCorrectly() {
+    void constructor_initializeFields_correctly() {
         Task task = new Task("Read book", "Finish reading chapter 3");
 
         assertEquals("Read book", task.getName());
