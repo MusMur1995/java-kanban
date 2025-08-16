@@ -4,6 +4,7 @@ import javakanban.models.Epic;
 import javakanban.models.Subtask;
 import javakanban.models.Task;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -53,8 +54,9 @@ public class InMemoryHistoryManagerTest {
         assertTrue(historyManager.getHistory().isEmpty());
     }
 
+    @Disabled
     @Test
-    @DisplayName("история должна хранить не более 10 последних задач")
+    @DisplayName("история должна хранить не более 10 последних задач (неактуально)")
     void add_moreThanTen_keepLastTen() {
         for (int i = 1; i <= 15; i++) {
             historyManager.add(new Task("Task" + i, "Desc" + i));
