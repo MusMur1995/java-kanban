@@ -54,20 +54,6 @@ public class InMemoryHistoryManagerTest {
         assertTrue(historyManager.getHistory().isEmpty());
     }
 
-    @Disabled
-    @Test
-    @DisplayName("история должна хранить не более 10 последних задач (неактуально)")
-    void add_moreThanTen_keepLastTen() {
-        for (int i = 1; i <= 15; i++) {
-            historyManager.add(new Task("Task" + i, "Desc" + i));
-        }
-
-        List<Task> history = historyManager.getHistory();
-        assertEquals(10, history.size());
-        assertEquals("Task6", history.get(0).getName());
-        assertEquals("Task15", history.get(9).getName());
-    }
-
     @Test
     @DisplayName("Добавление Epic с полями")
     void add_epicWithFields_epicAdded() {

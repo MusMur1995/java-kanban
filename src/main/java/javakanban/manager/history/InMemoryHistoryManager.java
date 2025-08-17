@@ -30,8 +30,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task == null) return;
 
+        remove(task.getId()); // Удаляем старую версию если есть
+
         Task taskCopy = task.copy();
-        linkLast(taskCopy);
+        Node newNode = linkLast(taskCopy);
+        historyMap.put(taskCopy.getId(), newNode);
     }
 
     /**
@@ -80,7 +83,7 @@ public class InMemoryHistoryManager implements HistoryManager {
      *
      * @param task задача для добавления
      */
-    private void linkLast(Task task) {
+    private Node linkLast(Task task) {
 
         Node newNode = new Node();
         newNode.task = task;
@@ -95,7 +98,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         tail = newNode;
 
-        historyMap.put(task.getId(), newNode);
+        return newNode;
     }
 
     /**
