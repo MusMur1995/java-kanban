@@ -1,7 +1,7 @@
 package javakanban;
 
-import javakanban.models.*;
 import javakanban.manager.Managers;
+import javakanban.models.*;
 import javakanban.manager.task.TaskManager;
 
 public class Main {
