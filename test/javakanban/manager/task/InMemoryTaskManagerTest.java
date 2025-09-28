@@ -118,12 +118,57 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("getTaskById() должен сохранять задачи, в истории запросов, после получения по ID")
-    void getHistory_containsTask_whenAccessedById() {
+    @DisplayName("getTaskById() должен сохранять копии задач в истории")
+    void getHistory_containsTaskCopy_whenAccessedById() {
         Task task = manager.createTask(new Task("Task", "Desc"));
-        manager.getTaskById(task.getId());
+
+        Task fromManager = manager.getTaskById(task.getId());
 
         List<Task> history = manager.getHistory();
-        assertEquals(task, history.get(0));
+        assertFalse(history.isEmpty(), "История не должна быть пустой");
+
+        Task historyTask = history.get(0);
+        assertEquals(task.getId(), historyTask.getId());
+        assertEquals(task.getName(), historyTask.getName());
+
+        assertNotSame(task, historyTask);
+        assertNotSame(fromManager, historyTask);
+    }
+
+    @Test
+    @DisplayName("Удаление подзадачи удаляет её ID из Epic")
+    void deleteSubtask_removesIdFromEpic() {
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+        Subtask subtask = manager.createSubtask(new Subtask("Sub", "Desc", epic.getId()));
+
+        manager.deleteSubtaskById(subtask.getId());
+        assertFalse(epic.getSubtaskIds().contains(subtask.getId()),
+                "ID подзадачи должен быть удалён из Epic");
+    }
+
+    @Test
+    @DisplayName("Удаление Epic удаляет все его подзадачи")
+    void deleteEpic_removesAllSubtasks() {
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+        Subtask subtask1 = manager.createSubtask(new Subtask("Sub1", "Desc", epic.getId()));
+        Subtask subtask2 = manager.createSubtask(new Subtask("Sub2", "Desc", epic.getId()));
+
+        manager.deleteEpicById(epic.getId());
+        assertNull(manager.getSubtaskById(subtask1.getId()), "Подзадача 1 должна быть удалена");
+        assertNull(manager.getSubtaskById(subtask2.getId()), "Подзадача 2 должна быть удалена");
+    }
+
+    @Test
+    @DisplayName("Изменение имени задачи через сеттер не влияет на менеджер")
+    void setName_doesNotAffectManager() {
+        Task task = manager.createTask(new Task("Task", "Desc"));
+
+        Task taskFromManager = manager.getTaskById(task.getId());
+        taskFromManager.setName("New Name"); // Изменяем копию
+
+        Task freshFromManager = manager.getTaskById(task.getId());
+
+        assertNotEquals("New Name", freshFromManager.getName(),
+                "Менеджер должен хранить исходное имя задачи");
     }
 }
