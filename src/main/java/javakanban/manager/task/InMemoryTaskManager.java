@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
-    private Map<Integer, Task> tasks = new HashMap<>();
-    private Map<Integer, Subtask> subtasks = new HashMap<>();
-    private Map<Integer, Epic> epics = new HashMap<>();
+    Map<Integer, Task> tasks = new HashMap<>();
+    Map<Integer, Subtask> subtasks = new HashMap<>();
+    Map<Integer, Epic> epics = new HashMap<>();
     private final HistoryManager historyManager;
-    private int idCounter = 0;
+    int idCounter = 0;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
