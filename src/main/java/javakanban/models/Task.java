@@ -19,6 +19,10 @@ public class Task {
         return name;
     }
 
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
     public String getDescription() {
         return description;
     }
