@@ -23,11 +23,13 @@ class FileBackedTaskManagerTest {
     @BeforeEach
     void setUp() throws IOException {
         file = File.createTempFile("test", ".csv", tempDir.toFile());
-        manager = FileBackedTaskManager.createForTest(file);
+        //manager = FileBackedTaskManager.createForTest(file);
     }
 
     @Test
     void shouldSaveAndLoadEmptyFile() {
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
+
         manager.save();
 
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
@@ -39,6 +41,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldSaveAndLoadTasks() {
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
         Task task1 = manager.createTask(new Task("Task 1", "Description 1"));
         Task task2 = manager.createTask(new Task("Task 2", "Description 2"));
 
@@ -65,6 +68,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldSaveAndLoadTaskData() {
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
         Task originalTask = new Task("Test Task", "Test Description");
         originalTask.setStatus(TaskStatus.IN_PROGRESS);
         Task createdTask = manager.createTask(originalTask);
@@ -81,6 +85,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldMaintainTaskOrderAfterLoad() {
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
         Task task1 = manager.createTask(new Task("Task 1", "Description 1"));
         Task task2 = manager.createTask(new Task("Task 2", "Description 2"));
         Epic epic = manager.createEpic(new Epic("Epic 1", "Epic description"));
@@ -110,6 +115,7 @@ class FileBackedTaskManagerTest {
     @Test
     @DisplayName("Проверяем, что счётчик ID восстанавливается правильно после загрузки из файла")
     void shouldRestoreIdCounterCorrectly() {
+        FileBackedTaskManager manager = FileBackedTaskManager.loadFromFile(file);
         Task task1 = manager.createTask(new Task("Task 1", "Description 1")); // ID = 1
         Task task2 = manager.createTask(new Task("Task 2", "Description 2")); // ID = 2
         Epic epic = manager.createEpic(new Epic("Epic 1", "Epic description")); // ID = 3

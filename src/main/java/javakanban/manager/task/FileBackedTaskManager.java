@@ -23,9 +23,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     //создал метод для тестов (так как конструктор теперь приватный и к нему нет доступа из папки с тестами)
-    static FileBackedTaskManager createForTest(File file) {
-        return new FileBackedTaskManager(Managers.getDefaultHistory(), file);
-    }
+//    static FileBackedTaskManager createForTest(File file) {
+//        return new FileBackedTaskManager(Managers.getDefaultHistory(), file);
+//    }
 
     protected void save() {
         try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
