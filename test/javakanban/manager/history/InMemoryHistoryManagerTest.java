@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryHistoryManagerTest {
 
@@ -32,7 +31,6 @@ public class InMemoryHistoryManagerTest {
         assertEquals(task, history.get(0));
     }
 
-    //убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных.
     @Test
     @DisplayName("История хранит неизменённую задачу после изменения оригинала")
     void add_modifyOriginal_copyInHistoryUnchanged() {
@@ -43,8 +41,7 @@ public class InMemoryHistoryManagerTest {
         task.setName("Modified Task");
 
         List<Task> history = historyManager.getHistory();
-        assertEquals("Task", history.get(0).getName(),
-                "В истории должна сохраняться неизменная копия задачи");
+        assertEquals("Task", history.get(0).getName());
     }
 
     @Test
@@ -62,13 +59,13 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(epic);
 
         List<Task> history = historyManager.getHistory();
-        assertEquals(1, history.size(), "История должна содержать одну задачу");
+        assertEquals(1, history.size());
 
         Epic epicFromHistory = (Epic) history.get(0);
-        assertEquals("EpicTask", epicFromHistory.getName(), "Имя Epic должно совпадать");
-        assertEquals("EpicDescription", epicFromHistory.getDescription(), "Описание Epic должно совпадать");
-        assertEquals(1, epicFromHistory.getSubtaskIds().size(), "Epic должен содержать один подзадачный ID");
-        assertEquals(101, epicFromHistory.getSubtaskIds().get(0), "ID подзадачи должен совпадать");
+        assertEquals("EpicTask", epicFromHistory.getName());
+        assertEquals("EpicDescription", epicFromHistory.getDescription());
+        assertEquals(1, epicFromHistory.getSubtaskIds().size());
+        assertEquals(101, epicFromHistory.getSubtaskIds().get(0));
     }
 
     @Test
@@ -78,11 +75,100 @@ public class InMemoryHistoryManagerTest {
         historyManager.add(subtask);
 
         List<Task> history = historyManager.getHistory();
-        assertEquals(1, history.size(), "История должна содержать одну задачу");
+        assertEquals(1, history.size());
 
         Subtask subtaskFromHistory = (Subtask) history.get(0);
-        assertEquals("Subtask", subtaskFromHistory.getName(), "Имя Subtask должно совпадать");
-        assertEquals("SubDescription", subtaskFromHistory.getDescription(), "Описание Subtask должно совпадать");
-        assertEquals(42, subtaskFromHistory.getEpicId(), "ID Epic для Subtask должен совпадать");
+        assertEquals("Subtask", subtaskFromHistory.getName());
+        assertEquals("SubDescription", subtaskFromHistory.getDescription());
+        assertEquals(42, subtaskFromHistory.getEpicId());
+    }
+
+    @Test
+    @DisplayName("История должна быть пустой при создании")
+    void history_shouldBeEmpty_onCreation() {
+        List<Task> history = historyManager.getHistory();
+        assertTrue(history.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Дублирование задачи в истории должно перемещать её в конец")
+    void add_duplicateTask_shouldMoveToEnd() {
+        Task task = new Task("Task", "Description");
+
+        historyManager.add(task);
+        historyManager.add(task);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size());
+        assertEquals(task, history.get(0));
+    }
+
+    @Test
+    @DisplayName("Удаление задачи из начала истории")
+    void remove_fromBeginning() {
+        Task task1 = new Task("Task 1", "Description");
+        Task task2 = new Task("Task 2", "Description");
+        Task task3 = new Task("Task 3", "Description");
+
+        task1.setId(1);
+        task2.setId(2);
+        task3.setId(3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(task1.getId());
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task2.getId(), history.get(0).getId());
+        assertEquals(task3.getId(), history.get(1).getId());
+    }
+
+    @Test
+    @DisplayName("Удаление задачи из середины истории")
+    void remove_fromMiddle() {
+        Task task1 = new Task("Task 1", "Description");
+        Task task2 = new Task("Task 2", "Description");
+        Task task3 = new Task("Task 3", "Description");
+
+        task1.setId(1);
+        task2.setId(2);
+        task3.setId(3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(task2.getId());
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task1.getId(), history.get(0).getId());
+        assertEquals(task3.getId(), history.get(1).getId());
+    }
+
+    @Test
+    @DisplayName("Удаление задачи из конца истории")
+    void remove_fromEnd() {
+        Task task1 = new Task("Task 1", "Description");
+        Task task2 = new Task("Task 2", "Description");
+        Task task3 = new Task("Task 3", "Description");
+
+        task1.setId(1);
+        task2.setId(2);
+        task3.setId(3);
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        historyManager.add(task3);
+
+        historyManager.remove(task3.getId());
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task1.getId(), history.get(0).getId());
+        assertEquals(task2.getId(), history.get(1).getId());
     }
 }
