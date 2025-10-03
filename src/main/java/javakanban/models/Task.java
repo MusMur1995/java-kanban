@@ -10,8 +10,8 @@ public class Task {
     private Integer id;
     private TaskStatus status;
 
-    private Duration duration;
-    private LocalDateTime startTime;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
