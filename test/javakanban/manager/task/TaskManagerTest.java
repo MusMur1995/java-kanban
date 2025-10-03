@@ -119,13 +119,13 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    @DisplayName("Создание подзадачи с несуществующим эпиком должно возвращать null")
-    void createSubtask_withNonExistentEpic_shouldReturnNull() {
+    @DisplayName("Создание подзадачи с несуществующим эпиком должно выбрасывать исключение")
+    void createSubtask_withNonExistentEpic_shouldThrowException() {
         Subtask subtask = new Subtask("Subtask", "Description", 999);
 
-        Subtask result = manager.createSubtask(subtask);
-
-        assertNull(result);
+        assertThrows(IllegalArgumentException.class, () -> {
+            manager.createSubtask(subtask);
+        }, "Должно выбрасываться исключение при создании подзадачи с несуществующим эпиком");
     }
 
     @Test

@@ -21,37 +21,21 @@ public class Epic extends Task {
     }
 
     @Override
-    public Duration getDuration() {
-        return super.getDuration();
-    }
-
-    @Override
-    public LocalDateTime getStartTime() {
-        return super.getStartTime();
-    }
-
-    @Override
     public LocalDateTime getEndTime() {
-        if (endTime != null) {
-            return endTime;
-        }
-        return super.getEndTime();
+        return endTime;
     }
 
-    public void setCalculatedTimes(LocalDateTime startTime, LocalDateTime endTime, Duration duration) {
-        super.setStartTime(startTime);
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
-        super.setDuration(duration);
     }
-
     @Override
     public void setDuration(Duration duration) {
-        throw new UnsupportedOperationException("Duration эпика рассчитывается автоматически из подзадач");
+        this.duration = duration != null ? duration : Duration.ZERO;
     }
 
     @Override
     public void setStartTime(LocalDateTime startTime) {
-        throw new UnsupportedOperationException("StartTime эпика рассчитывается автоматически из подзадач");
+        this.startTime = startTime;
     }
 
 
