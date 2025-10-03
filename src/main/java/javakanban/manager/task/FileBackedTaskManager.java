@@ -22,14 +22,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    //создал метод для тестов (так как конструктор теперь приватный и к нему нет доступа из папки с тестами)
-//    static FileBackedTaskManager createForTest(File file) {
-//        return new FileBackedTaskManager(Managers.getDefaultHistory(), file);
-//    }
-
     protected void save() {
         try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,duration,startTime,epic\n");
 
             for (Task task : getAllTasks()) {
                 writer.write(CsvConverter.toString(task) + "\n");
@@ -48,7 +43,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(Managers.getDefaultHistory(), file);
 
-        // если файл не существует или пустой, то возвращаем пустой менеджер
         if (!file.exists() || file.length() == 0) {
             return manager;
         }

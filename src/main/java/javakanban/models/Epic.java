@@ -1,5 +1,7 @@
 package javakanban.models;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +9,24 @@ public class Epic extends Task {
 
     private List<Integer> subtaskIds = new ArrayList<>();
 
+    private LocalDateTime endTime;
+
     public Epic(String name, String description) {
         super(name, description);
+    }
+
+    public Epic(String name, String description, Duration duration, LocalDateTime startTime) {
+        super(name, description, duration, startTime);
+        this.endTime = null;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public void addSubtaskId(int subtaskId) {
@@ -33,10 +51,11 @@ public class Epic extends Task {
 
     @Override
     public Epic copy() {
-        Epic copy = new Epic(this.getName(), this.getDescription());
+        Epic copy = new Epic(this.getName(), this.getDescription(), this.getDuration(), this.getStartTime());
         copy.setId(this.getId());
         copy.setStatus(this.getStatus());
         copy.subtaskIds = new ArrayList<>(this.subtaskIds);
+        copy.endTime = this.endTime;
         return copy;
     }
 
@@ -47,6 +66,9 @@ public class Epic extends Task {
                 ", name='" + getName() + '\'' +
                 ", status=" + getStatus() +
                 ", description='" + getDescription() + '\'' +
+                ", duration=" + (getDuration() != null ? getDuration().toMinutes() + "min" : "null") +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
                 ", subtasks=" + subtaskIds.size() +
                 '}';
     }

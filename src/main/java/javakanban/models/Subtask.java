@@ -1,11 +1,19 @@
 package javakanban.models;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private int epicId;
 
     public Subtask(String name, String description, int epicId) {
         super(name, description);
+        this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, int epicId, Duration duration, LocalDateTime startTime) {
+        super(name, description, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -27,7 +35,8 @@ public class Subtask extends Task {
 
     @Override
     public Subtask copy() {
-        Subtask copy = new Subtask(this.getName(), this.getDescription(), this.epicId);
+        Subtask copy = new Subtask(this.getName(), this.getDescription(), this.epicId,
+                this.getDuration(), this.getStartTime());
         copy.setId(this.getId());
         copy.setStatus(this.getStatus());
         return copy;
@@ -45,6 +54,9 @@ public class Subtask extends Task {
                 ", name='" + getName() + '\'' +
                 ", status=" + getStatus() +
                 ", description='" + getDescription() + '\'' +
+                ", duration=" + (getDuration() != null ? getDuration().toMinutes() + "min" : "null") +
+                ", startTime=" + getStartTime() +
+                ", endTime=" + getEndTime() +
                 ", epicId=" + epicId +
                 '}';
     }

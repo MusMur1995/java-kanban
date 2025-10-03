@@ -10,7 +10,6 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    // Методы для Task
     List<Task> getAllTasks();
 
     void deleteAllTasks();
@@ -23,7 +22,6 @@ public interface TaskManager {
 
     void deleteTaskById(int id);
 
-    // Методы для Epic
     List<Epic> getAllEpics();
 
     void deleteAllEpics();
@@ -36,7 +34,6 @@ public interface TaskManager {
 
     void deleteEpicById(int id);
 
-    // Методы для Subtask
     List<Subtask> getAllSubtasks();
 
     void deleteAllSubtasks();
@@ -50,4 +47,6 @@ public interface TaskManager {
     void deleteSubtaskById(int id);
 
     List<Subtask> getSubtasksByEpic(int epicId);
+
+    List<Task> getPrioritizedTasks();
 }
