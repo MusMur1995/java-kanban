@@ -228,7 +228,6 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setDuration(totalDuration);
     }
 
-    //методы для subTask
     @Override
     public List<Subtask> getAllSubtasks() {
         return new ArrayList<>(subtasks.values());
