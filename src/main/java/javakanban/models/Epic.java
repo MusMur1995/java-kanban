@@ -29,17 +29,6 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
-    @Override
-    public void setDuration(Duration duration) {
-        this.duration = duration != null ? duration : Duration.ZERO;
-    }
-
-    @Override
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-
     public void addSubtaskId(int subtaskId) {
         if (this.getId() == subtaskId) {
             return;
