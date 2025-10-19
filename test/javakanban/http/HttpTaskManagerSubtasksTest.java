@@ -1,4 +1,5 @@
 package javakanban.http;
+import javakanban.exceptions.NotFoundException;
 import javakanban.models.Epic;
 import javakanban.models.Subtask;
 import javakanban.models.TaskStatus;
@@ -110,7 +111,7 @@ class HttpTaskManagerSubtasksTest extends HttpBaseTest{
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertNull(manager.getSubtaskById(subtask.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getSubtaskById(subtask.getId()));
     }
 
     @Test

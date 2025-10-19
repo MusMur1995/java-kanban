@@ -37,22 +37,16 @@ public class HttpTaskServer {
     }
 
     private void configureHandlers() {
-        TasksHandler tasksHandler = new TasksHandler(taskManager, gson);
-        SubtasksHandler subtasksHandler = new SubtasksHandler(taskManager, gson);
-        EpicsHandler epicsHandler = new EpicsHandler(taskManager, gson);
-        HistoryHandler historyHandler = new HistoryHandler(taskManager, gson);
-        PrioritizedHandler prioritizedHandler = new PrioritizedHandler(taskManager, gson);
 
-        server.createContext("/tasks/", tasksHandler);
-        server.createContext("/subtasks/", subtasksHandler);
-        server.createContext("/epics/", epicsHandler);
+        server.createContext("/tasks/", new TasksHandler(taskManager, gson));
+        server.createContext("/epics/", new EpicsHandler(taskManager, gson));
 
-        server.createContext("/tasks", tasksHandler);
-        server.createContext("/subtasks", subtasksHandler);
-        server.createContext("/epics", epicsHandler);
+        server.createContext("/tasks", new TasksHandler(taskManager, gson));
+        server.createContext("/subtasks", new SubtasksHandler(taskManager, gson));
+        server.createContext("/epics", new EpicsHandler(taskManager, gson));
 
-        server.createContext("/history", historyHandler);
-        server.createContext("/prioritized", prioritizedHandler);
+        server.createContext("/history", new HistoryHandler(taskManager, gson));
+        server.createContext("/prioritized", new PrioritizedHandler(taskManager, gson));
     }
 
     public void start() {

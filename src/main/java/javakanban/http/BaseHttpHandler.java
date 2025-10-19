@@ -38,6 +38,10 @@ public class BaseHttpHandler {
         httpExchange.close();
     }
 
+    protected void sendBadRequest(HttpExchange exchange, String message) throws IOException {
+        sendText(exchange, message, 400);
+    }
+
     protected void sendHasInteractions(HttpExchange httpExchange) throws IOException {
         byte[] resp = "Not Acceptable".getBytes(StandardCharsets.UTF_8);
         httpExchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");

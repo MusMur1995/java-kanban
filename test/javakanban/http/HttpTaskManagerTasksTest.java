@@ -1,5 +1,6 @@
 package javakanban.http;
 
+import javakanban.exceptions.NotFoundException;
 import javakanban.models.Task;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -120,7 +121,7 @@ class HttpTaskManagerTasksTest extends HttpBaseTest{
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertNull(manager.getTaskById(task.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getTaskById(task.getId()));
     }
 
     @Test

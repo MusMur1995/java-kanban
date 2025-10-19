@@ -3,6 +3,7 @@ package javakanban.http;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import javakanban.exceptions.NotFoundException;
 import javakanban.manager.task.TaskManager;
 
 import java.io.IOException;
@@ -22,61 +23,93 @@ public abstract class AbstractTaskHandler<T> extends BaseHttpHandler implements 
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getPath();
         String basePath = getBasePath();
+
         try {
             switch (method) {
-                case "GET" -> {
-                    if (path.equals(basePath)) {
-                        List<T> entities = getAllEntities();
-                        String jsonResponse = gson.toJson(entities);
-                        sendText(exchange, jsonResponse);
-                    } else if (path.startsWith(basePath + "/")) {
-                        int id = extractIdFromPath(path, basePath);
-                        T entity = getEntityById(id);
-                        if (entity != null) {
-                            String jsonResponse = gson.toJson(entity);
-                            sendText(exchange, jsonResponse);
-                        } else sendNotFound(exchange);
-                    }
-                }
-                case "POST" -> {
-                    if (path.equals(basePath)) {
-                        String bodyJson = readRequestBody(exchange);
-                        T newEntity = gson.fromJson(bodyJson, entityType);
-                        T createdEntity = createEntity(newEntity);
-                        String jsonResponse = gson.toJson(createdEntity);
-                        sendText(exchange, jsonResponse, 201);
-                    } else if (path.startsWith(basePath + "/")) {
-                        int id = extractIdFromPath(path, basePath);
-                        String bodyJson = readRequestBody(exchange);
-                        T updatedEntity = gson.fromJson(bodyJson, entityType);
-                        setEntityId(updatedEntity, id);
-                        T resultEntity = updateEntity(updatedEntity);
-                        String jsonResponse = gson.toJson(resultEntity);
-                        sendText(exchange, jsonResponse);
-                    }
-                }
-                case "DELETE" -> {
-                    if (path.startsWith(basePath + "/")) {
-                        int id = extractIdFromPath(path, basePath);
-                        deleteEntity(id);
-                        sendText(exchange, "Задача с id " + id + " успешно удалена");
-                    } else if (path.equals(basePath)) {
-                        sendNotAllowed(exchange);
-                    }
-                }
+                case "GET" -> handleGet(exchange, path, basePath);
+                case "POST" -> handlePost(exchange, path, basePath);
+                case "DELETE" -> handleDelete(exchange, path, basePath);
                 default -> sendNotAllowed(exchange);
             }
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
         } catch (IllegalArgumentException e) {
-            System.out.println("Обнаружено пересечение задач: " + e.getMessage());
-            sendHasInteractions(exchange);
+            if (e.getMessage().contains("пересекается по времени")) {
+                System.out.println("Обнаружено пересечение задач: " + e.getMessage());
+                sendHasInteractions(exchange);
+            } else {
+                sendBadRequest(exchange, e.getMessage());
+            }
         } catch (Exception exception) {
-            System.out.println("Метод: " + method);
-            System.out.println("Путь: " + path);
-            System.out.println("Исключение: " + exception.getClass().getName());
-            System.out.println("Сообщение: " + exception.getMessage());
-            exception.printStackTrace();
-            sendInternalError(exchange);
+            handleException(exchange, method, path, exception);
         }
+    }
+
+    private void handleGet(HttpExchange exchange, String path, String basePath) throws IOException {
+        if (path.equals(basePath)) {
+            handleGetAll(exchange);
+        } else if (path.startsWith(basePath + "/")) {
+            handleGetById(exchange, path, basePath);
+        }
+    }
+
+    private void handleGetAll(HttpExchange exchange) throws IOException {
+        List<T> entities = getAllEntities();
+        String jsonResponse = gson.toJson(entities);
+        sendText(exchange, jsonResponse);
+    }
+
+    private void handleGetById(HttpExchange exchange, String path, String basePath) throws IOException {
+        int id = extractIdFromPath(path, basePath);
+        T entity = getEntityById(id);
+        String jsonResponse = gson.toJson(entity);
+        sendText(exchange, jsonResponse);
+    }
+
+    private void handlePost(HttpExchange exchange, String path, String basePath) throws IOException {
+        if (path.equals(basePath)) {
+            handleCreate(exchange);
+        } else if (path.startsWith(basePath + "/")) {
+            handleUpdate(exchange, path, basePath);
+        }
+    }
+
+    private void handleCreate(HttpExchange exchange) throws IOException {
+        String bodyJson = readRequestBody(exchange);
+        T newEntity = gson.fromJson(bodyJson, entityType);
+        T createdEntity = createEntity(newEntity);
+        String jsonResponse = gson.toJson(createdEntity);
+        sendText(exchange, jsonResponse, 201);
+    }
+
+    private void handleUpdate(HttpExchange exchange, String path, String basePath) throws IOException {
+        int id = extractIdFromPath(path, basePath);
+        String bodyJson = readRequestBody(exchange);
+        T updatedEntity = gson.fromJson(bodyJson, entityType);
+        setEntityId(updatedEntity, id);
+        T resultEntity = updateEntity(updatedEntity);
+        String jsonResponse = gson.toJson(resultEntity);
+        sendText(exchange, jsonResponse);
+    }
+
+    private void handleDelete(HttpExchange exchange, String path, String basePath) throws IOException {
+        if (path.startsWith(basePath + "/")) {
+            int id = extractIdFromPath(path, basePath);
+            deleteEntity(id);
+            sendText(exchange, "Задача с id " + id + " успешно удалена");
+        } else if (path.equals(basePath)) {
+            sendNotAllowed(exchange);
+        }
+    }
+
+    private void handleException(HttpExchange exchange, String method, String path, Exception exception) throws IOException {
+        String errorMessage = String.format(
+                "ОШИБКА В ОБРАБОТЧИКЕ | Метод: %s | Путь: %s | Исключение: %s | Сообщение: %s",
+                method, path, exception.getClass().getName(), exception.getMessage()
+        );
+        System.out.println(errorMessage);
+        exception.printStackTrace();
+        sendInternalError(exchange);
     }
 
     private int extractIdFromPath(String path, String basePath) {

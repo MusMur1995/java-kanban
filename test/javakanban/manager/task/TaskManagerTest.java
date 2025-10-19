@@ -1,5 +1,6 @@
 package javakanban.manager.task;
 
+import javakanban.exceptions.NotFoundException;
 import javakanban.models.Epic;
 import javakanban.models.Subtask;
 import javakanban.models.Task;
@@ -89,9 +90,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         manager.deleteEpicById(epic.getId());
 
-        assertNull(manager.getSubtaskById(sub1.getId()));
-        assertNull(manager.getSubtaskById(sub2.getId()));
-        assertNull(manager.getEpicById(epic.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getSubtaskById(sub1.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getSubtaskById(sub2.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getEpicById(epic.getId()));
     }
 
     @Test

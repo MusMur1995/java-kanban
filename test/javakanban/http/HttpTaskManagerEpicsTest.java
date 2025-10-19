@@ -1,19 +1,14 @@
 package javakanban.http;
 
-import com.google.gson.Gson;
-import javakanban.manager.Managers;
-import javakanban.manager.task.TaskManager;
+import javakanban.exceptions.NotFoundException;
 import javakanban.models.Epic;
 import javakanban.models.Subtask;
 import javakanban.models.TaskStatus;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -123,7 +118,7 @@ class HttpTaskManagerEpicsTest extends HttpBaseTest{
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertNull(manager.getEpicById(epic.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getEpicById(epic.getId()));
     }
 
     @Test
@@ -172,8 +167,8 @@ class HttpTaskManagerEpicsTest extends HttpBaseTest{
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertNull(manager.getEpicById(epic.getId()));
-        assertNull(manager.getSubtaskById(subtask.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getEpicById(epic.getId()));
+        assertThrows(NotFoundException.class, () -> manager.getSubtaskById(subtask.getId()));
     }
 
     @Test
