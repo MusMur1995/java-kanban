@@ -1,5 +1,6 @@
 package javakanban.manager.task;
 
+import javakanban.exceptions.NotFoundException;
 import javakanban.manager.history.HistoryManager;
 import javakanban.models.*;
 
@@ -56,13 +57,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
-        if (task != null) {
-
-            historyManager.add(task);
-
-            return task.copy();
+        if (task == null) {
+            throw new NotFoundException("Задача с ID " + id + " не найдена");
         }
-        return null;
+        historyManager.add(task);
+        return task.copy();
     }
 
     @Override
@@ -70,9 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
         validateNoTimeOverlap(task);
         task.setId(++idCounter);
         tasks.put(task.getId(), task);
-        if (task.getStartTime() != null) {
-            prioritizedTasks.add(task);
-        }
+        prioritizedTasks.add(task);
         return task;
     }
 
@@ -89,9 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
         existing.setStatus(task.getStatus());
         existing.setDuration(task.getDuration());
         existing.setStartTime(task.getStartTime());
-        if (existing.getStartTime() != null) {
-            prioritizedTasks.add(existing);
-        }
+        prioritizedTasks.add(task);
         return existing;
     }
 
@@ -126,9 +121,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
-        if (epic != null) {
-            historyManager.add(epic);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с ID " + id + " не найдена");
         }
+        historyManager.add(epic);
         return epic;
     }
 
@@ -140,7 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public Epic updateEpic(Epic epic) {
         if (!epics.containsKey(epic.getId())) {
             throw new IllegalArgumentException("Эпик с ID " + epic.getId() + " не найден");
         }
@@ -149,6 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
         existingEpic.setDescription(epic.getDescription());
         updateEpicStatus(existingEpic.getId());
         calculateEpicTimes(existingEpic, getSubtasksByEpic(existingEpic.getId()));
+        return existingEpic;
     }
 
     @Override
@@ -251,9 +248,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с ID " + id + " не найдена");
         }
+        historyManager.add(subtask);
         return subtask;
     }
 
@@ -278,7 +276,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
+    public Subtask updateSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             throw new IllegalArgumentException("Подзадача с ID " + subtask.getId() + " не найдена");
         }
@@ -300,6 +298,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         calculateEpicTimes(epics.get(subtask.getEpicId()),
                 getSubtasksByEpic(subtask.getEpicId()));
+        return existing;
     }
 
     @Override
@@ -334,6 +333,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
+        System.out.println("=== prioritizedTasks содержимое ===");
+        for (Task task : prioritizedTasks) {
+            System.out.println("Task " + task.getId() + ": " + task.getName() +
+                    ", startTime: " + task.getStartTime());
+        }
+        System.out.println("Всего в prioritizedTasks: " + prioritizedTasks.size());
+        System.out.println("=== КОНЕЦ ===");
+
         return new ArrayList<>(prioritizedTasks);
     }
 
